@@ -1,0 +1,63 @@
+SELECT 
+MIS_CC_OS_Data_2016.SM, 
+MIS_CC_OS_Data_2016.SM_NAME, 
+MIS_CC_OS_Data_2016.M, 
+MIS_CC_OS_Data_2016.M_NAME, 
+MIS_CC_OS_Data_2016.AMSup, 
+MIS_CC_OS_Data_2016.[AMSup NAME], 
+MIS_CC_OS_Data_2016.TL_Code, 
+MIS_CC_OS_Data_2016.TL_Name, 
+MIS_CC_OS_Data_2016.Agent_Code, 
+MIS_CC_OS_Data_2016.Agent_Name, 
+MIS_CC_OS_Data_2016.Result, 
+MIS_CC_OS_Data_2016.Month, 
+MIS_CC_OS_Data_2016.Criteria_Code, 
+MIS_CC_OS_Data_2016.[New/Exist], 
+Switch(
+	Agent_Code NOT LIKE '7*' AND TL_Code LIKE '4*','Indv_TL',
+	Agent_Code NOT LIKE '7*' AND TL_Code LIKE '5*' AND Source_Code in ('OGS','OSS'),'KeyAccount_TL',
+	Agent_Code NOT LIKE '7*' AND TL_Code LIKE '5*' AND Source_Code LIKE 'OCS','New_Corp_TL',
+	Agent_Code NOT LIKE '7*' AND Source_Code LIKE 'AXA','AXA',
+	Agent_Code LIKE '7*', 'Tele') AS Channel_Group,
+MIS_CC_OS_Data_2016.Branch_Code,
+'CC' AS Product,
+IIf([Result] In ('A','R','D','C'),1,0) AS Finalized, 
+IIf([Result] in ('A','R','D'),1,0) AS Resolved, 
+IIf([Result]='A',1,0) AS Appr, 
+IIf(([Result]='A' And [Criteria_Code]='0000'),1,0) AS ApprNew, 
+IIf(([Result]='A' And [Criteria_Code]='0000'),[Approve_Amount],0) AS Credit_Limit, 
+IIf(([Result]='A' And [Criteria_Code]='0000' And [No_Transaction_Date]<=60),1,0) AS Quality60
+FROM MIS_CC_OS_Data_2016;
+ 
+UNION ALL 
+
+SELECT 
+MIS_RL_OS_Data_60_2016.SM, 
+MIS_RL_OS_Data_60_2016.SM_NAME, 
+MIS_RL_OS_Data_60_2016.M, 
+MIS_RL_OS_Data_60_2016.M_NAME, 
+MIS_RL_OS_Data_60_2016.AMSup, 
+MIS_RL_OS_Data_60_2016.[AMSup NAME], 
+MIS_RL_OS_Data_60_2016.TL_Code, 
+MIS_RL_OS_Data_60_2016.TL_Name, 
+MIS_RL_OS_Data_60_2016.Agent_Code, 
+MIS_RL_OS_Data_60_2016.Agent_Name, 
+MIS_RL_OS_Data_60_2016.Result, 
+MIS_RL_OS_Data_60_2016.Month, 
+MIS_RL_OS_Data_60_2016.Criteria_Code,
+'' AS [New/Exist],
+Switch(
+	Agent_Code NOT LIKE '7*' AND TL_Code LIKE '4*','Indv_TL',
+	Agent_Code NOT LIKE '7*' AND TL_Code LIKE '5*' AND Source_Code in ('OGS','OSS'),'KeyAccount_TL',
+	Agent_Code NOT LIKE '7*' AND TL_Code LIKE '5*' AND Source_Code LIKE 'OCS','New_Corp_TL',
+	Agent_Code NOT LIKE '7*' AND Source_Code LIKE 'AXA','AXA',
+	Agent_Code LIKE '7*', 'Tele') AS Channel_Group,
+MIS_RL_OS_Data_60_2016.Branch_Code,
+'RL' AS Product,
+IIf([Result] In ('A','R','D','C'),1,0) AS Finalized, 
+IIf([Result] in ('A','R','D'),1,0) AS Resolved, 
+IIf([Result]='A',1,0) AS Appr, 
+IIf([Result]='A' And [Criteria_Code]='0000',1,0) AS ApprNew, 
+IIf([Result]='A',[Approve_Amount],0) AS Credit_Limit,
+IIf((([Result]='A' And [blk_Code]='VX' And [DAY_CLOSE]<=60) Or ([Result]='A' And [blk_Code]<>'VX' And [BALANCE]<=1 And [DAY_CLOSE]<=60)),1,0) AS Quality60
+FROM MIS_RL_OS_Data_60_2016;

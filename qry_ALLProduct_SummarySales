@@ -1,0 +1,6 @@
+SELECT qry_ALLProduct_Sales.Agent_Code, 
+qry_ALLProduct_Sales.Month, 
+SUM(qry_ALLProduct_Sales.Appr) AS TT_Appr
+FROM qry_ALLProduct_Sales
+GROUP BY qry_ALLProduct_Sales.Agent_Code, qry_ALLProduct_Sales.Month
+HAVING SUM(qry_ALLProduct_Sales.Appr) >= 1;
