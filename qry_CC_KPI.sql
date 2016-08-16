@@ -69,4 +69,4 @@ IIf((Amway Is Not Null Or Insurance Is Not Null Or Occupation_Code='33'),1,0) AS
 Occupation_Code_Frontend.Desc, 
 Region_KTC.Province_Eng, 
 Region_KTC.Region_Eng
-FROM (qry_CC_KPI_step1 LEFT JOIN Occupation_Code_Frontend ON qry_CC_KPI_step1.Occupation_Code=Occupation_Code_Frontend.Code) LEFT JOIN Region_KTC ON LEFT(qry_CC_KPI_step1.ZipCode,2)=Region_KTC.Left2_Zipcode;
+FROM (qry_CC_KPI_step1 LEFT JOIN Occupation_Code_Frontend ON qry_CC_KPI_step1.Occupation_Code=Occupation_Code_Frontend.Code) LEFT JOIN Region_KTC ON LEFT(qry_CC_KPI_step1.ZipCode,2)=Region_KTC.Left2_Zipcode;s
