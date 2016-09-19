@@ -46,21 +46,14 @@ Switch(
 	AMSup Like 'T1511' AND Month in ('201603','201604','201605','201606','201607','201608','201609','201610','201611','201612') AND [Source_Code] NOT LIKE 'AXA', 'Booth-UPC',
 	AMSup Like '1509' AND Month in ('201601','201602','201603') AND [Source_Code] NOT LIKE 'AXA', 'Booth-UPC',) AS Booth, 
 	
-IIf([TL_Code] in (SELECT DISTINCT [TL_Code] FROM [Telesales Office]), 1, NULL) AS TS_Office, Switch(
-	[TS_Office] = 1, 'TS_Office',
-	[Booth] = 'Booth-BKK', 'Booth-BKK',
-	[Booth] = 'Booth-UPC', 'Booth-UPC',
-	Agent_Code Like '7*' And [Branch_Code] = 'TAP', 'Tap',
-	Agent_Code Like '7*' And [Branch_Code] = 'DIY', 'DIY',
-	Agent_Code Like '7*' And [Branch_Code] = 'WEB', 'WEB',
-	Agent_Code Like '7*' And [Branch_Code] = 'INT', 'InterSpace',
-	Agent_Code Like '7*' And [Branch_Code] = 'SUP', 'SupCard',
-	Agent_Code Like '7*' And [Branch_Code] = 'REJ','Reject',
-	Agent_Code Like '7*' And [Branch_Code] = 'E2J','E2J',
-	Agent_Code Like '7*' And [Branch_Code] = 'TSO','TSO',
-	Agent_Code Like '7*' And [Branch_Code] = '000' And [Source_Code]='OSB','Reject',
-	Agent_Code Like '7*' ,'TS_Oth',
-	TRUE, 'Direct') AS Channel_Sub, 
+IIf([TL_Code] in (SELECT DISTINCT [TL_Code] FROM [Telesales Office]), 1, NULL) AS TS_Office, 
+
+Switch(  
+([Channel_Sub_step_1] IS NOT NULL), [Channel_Sub_step_1],
+([Channel_Sub_step_1] IS NULL AND [TS_Office]=1),'TS_Office',
+([Channel_Sub_step_1] IS NULL AND [Booth]='Booth-BKK'),'Booth-BKK',
+([Channel_Sub_step_1] IS NULL AND [Booth]='Booth-UPC'),'Booth-UPC',
+[Channel_Sub_step_1] IS NULL ,'Direct') AS Channel_Sub, 
 	
 Switch(
 	(AGE>=10 And AGE<=19),'10-19',

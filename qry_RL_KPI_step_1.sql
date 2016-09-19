@@ -1,6 +1,6 @@
 SELECT MIS_RL_OS_Data_60_2016.*, 
 Switch(
-Agent_Code Like '7*' And [Branch_Code]='TAP','Tap',
+Agent_Code Like '7*' And ([Branch_Code]='TAP' OR [Branch_Code]='TAB'),'Tap',
 Agent_Code Like '7*' And [Branch_Code]='DIY','DIY',
 Agent_Code Like '7*' And [Branch_Code]='WEB','WEB',
 Agent_Code Like '7*' And [Branch_Code]='INT','InterSpace',
