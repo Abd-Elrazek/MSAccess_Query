@@ -1,63 +1,54 @@
-SELECT MIS_CC_OS_Data_2017.*,
+SELECT qry_CC_KPI_step_1.*, 
+
+IIf([Result] In ('A','R','D','C'),1,0) AS Finalized, 
+IIf([Result] In ('A','R','D'),1,0) AS FinalizedNetCancel, 
+IIf([Result]='A',1,0) AS Appr, 
+IIf(([Result]='A' And LEFT([New/Exist],1)='N'),1,0) AS ApprNew, 
+IIf(([Result]='A' And LEFT([New/Exist],1)='N'),[Approve_Amount],0) AS Credit_Limit_New, 
+IIf(([Result]='A' And LEFT([New/Exist],1)='N' And [Act_status]='Yes'),1,0) AS Activate, 
+IIf(([Result]='A' And LEFT([New/Exist],1)='N' And [No_Transaction_Date]<=60),1,0) AS Active60, 
 
 Switch(
-	[Source_Code] IN ('TSO','OSB','OSN','PXC','PXD','SRN','SRS','TCS','E2J'), 'Tele',
-	TRUE,'OSS') AS Channel,
+	(Credit_Limit_New>=20000 And Credit_Limit_New<=39999),'20k-39k',
+	(Credit_Limit_New>=40000 And Credit_Limit_New<=59999),'40k-59k',
+	(Credit_Limit_New>=60000 And Credit_Limit_New<=79999),'60k-79k',
+	(Credit_Limit_New>=80000 And Credit_Limit_New<=99999),'80k-99k',
+	(Credit_Limit_New>=100000 And Credit_Limit_New<=119999),'100k-119k',
+	(Credit_Limit_New>=120000 And Credit_Limit_New<=139999),'120k-139k',
+	(Credit_Limit_New>=140000 And Credit_Limit_New<=159999),'140k-159k',
+	(Credit_Limit_New>=160000),'>160k') AS Credit_Limit_New_Range, 
 
 Switch(
-	Channel = 'Tele' AND Branch_Code In ('REJ','SUP','CTC','MGP','PCC','CCP','000'), 'Offline_Tele',
-	Channel = 'Tele', 'Online_Tele'
-	) AS Media_Type,
-	
-Switch(
-	[Media_Type] = 'Online_Tele' AND Branch_Code In ('WEB','DIY','TAP','TAB','CMK','MMK','FBB','FBC','DBB'), 'Own_Media',
-	[Media_Type] = 'Online_Tele' AND Branch_Code In ('FBA','FBP','GGP','SSP','INT','MAS','WPK','RAB','MAF'), 'Paid_Media',
-	True, Null
-	) AS Media_Cost,
-	
-Switch(
-	[Media_Type] = 'Online_Tele' AND Branch_Code In ('WEB','DIY','TAP','TAB','CMK','MMK','FBB','FBC','DBB','FBA','FBP'), 'KTC_Media',
-	[Media_Type] = 'Online_Tele' AND Branch_Code = 'GGP','GoogleSearch',
-	[Media_Type] = 'Online_Tele' AND Branch_Code = 'SSP','Silkspan',
-	[Media_Type] = 'Online_Tele' AND Branch_Code = 'INT','Interspace',
-	[Media_Type] = 'Online_Tele' AND Branch_Code = 'MAS','Masii',
-	[Media_Type] = 'Online_Tele' AND Branch_Code = 'WPK','WebPak',
-	[Media_Type] = 'Online_Tele' AND Branch_Code = 'RAB','Rabbit',
-	True, Null
-	) AS Media_Owner,
-	
-Switch(
-	[Media_Owner] = 'KTC_Media' AND Branch_Code = 'WEB','KTC_Web',
-	[Media_Owner] = 'KTC_Media' AND Branch_Code = 'DIY','DIY',
-	[Media_Owner] = 'KTC_Media' AND Branch_Code In ('TAP','TAB'), 'Tap',
-	[Media_Owner] = 'KTC_Media' AND Branch_Code = 'CMK','QR-CC',
-	[Media_Owner] = 'KTC_Media' AND Branch_Code = 'MMK','QR-Merchant',
-	[Media_Owner] = 'KTC_Media' AND Branch_Code = 'DBB','QR-Touch',
-	[Media_Owner] = 'KTC_Media' AND Branch_Code In ('FBB','FBC','FBA','FBP'), 'KTC_Facebook'
-	) AS KTC_Media_Type,
+	(AGE>=10 And AGE<=19),'10-19',
+	(AGE>=20 And AGE<=26),'20-26',
+	(AGE>=27 And AGE<=30),'27-30',
+	(AGE>=31 And AGE<=40),'31-40',
+	(AGE>=41 And AGE<=50),'41-50',
+	(AGE>=51 And AGE<=60),'51-60',
+	(AGE>=61 And AGE<=90),'61-90') AS Cus_Age_Range, 
 
 Switch(
-	[Media_Type] = 'Offline_Tele' AND Branch_Code IN ('REJ','000'),'Lead_Rej',
-	[Media_Type] = 'Offline_Tele' AND Branch_Code = 'SUP','SupCard',
-	[Media_Type] = 'Offline_Tele' AND Branch_Code = 'CTC','Lead_CS',
-	[Media_Type] = 'Offline_Tele' AND Branch_Code = 'MGP','Lead_MGM',
-	[Media_Type] = 'Offline_Tele' AND Branch_Code IN ('PCC','CCP'),'Lead_XSell'
-	) AS Offline_Proj,
+	(AGE<=26 And Income_Range='30,000 up'),'FJ&Inc>=30k',
+	(AGE<=26 And Income_Range<>'30,000 up'),'First Jobber',
+	(AGE>26 And Income_Range='30,000 up'),'Inc>=30k',True,'Mass') AS Cus_Segment,
+	
+IIf(Work_Place Like '*แอมเวย์*' Or Work_Place Like '*amway*' Or Flag_Test Like '*amway*' Or Flag_Test Like '*แอมเวย์*',1,0) AS Amway, 
 
-IIf([TL_Code] in (SELECT DISTINCT [TL_Code] FROM [Telesales Office]), 1, NULL) AS TS_Office, 
-	
 Switch(
-	Channel = 'OSS' And [TS_Office] = 1,'OSS_Tele',
-	Channel = 'OSS','Direct',
-	Channel = 'Tele','Telesales') AS Channel_Sub,
-	
-Switch(
-	[Channel_Sub] = 'Direct' And TL_Code Like '4*','Indv_TL',
-	[Channel_Sub] = 'Direct' And TL_Code Like '5*' And Source_Code Like 'OCS','New_Corp_TL',
-	[Channel_Sub] = 'Direct' And TL_Code Like '5*' ,'KeyAccount_TL',
-	[Channel_Sub] = 'Direct' And Source_Code Like 'AXA','AXA',
-	[Channel_Sub] = 'OSS_Tele', 'OSS_Tele', 
-	[Channel_Sub] = 'Telesales', 'Telesales') AS TL_Type
+	(Work_Place Like '*เอไอเอ*' Or Work_Place Like '*AIA*' Or Work_Place Like '*เอ ไอ เอ*' Or Work_Place Like '*เอ.ไอ.เอ*'),'AIA',
+	(Work_Place Like '*แอกซ่า*' Or Work_Place Like '*AXA*' Or Work_Place Like '*แอ็กซ่า*'),'AXA',
+	(Work_Place Like '*ไทยประกัน*' And Work_Place Not Like '*ไทยสมุทร*' And Work_Place Not Like '*เมือง*'),'ThaiLife',
+	(Work_Place Like "*ประกัน*" And Work_Place Not Like "*สังคม*"),'OthIns') AS Insurance, 
 
-	
-FROM MIS_CC_OS_Data_2017;
+IIf((Amway Is Not Null Or Insurance Is Not Null Or Occupation_Code='33'),1,0) AS ComEarner, 
+
+Occupation_Code_Frontend.Desc, 
+
+Province_Code_KTC.*
+
+FROM   (qry_cc_kpi_step_1 
+        LEFT JOIN occupation_code_frontend 
+               ON [qry_cc_kpi_step_1].occupation_code = 
+                  occupation_code_frontend.code) 
+       LEFT JOIN province_code_ktc 
+              ON [qry_cc_kpi_step_1].zipcode = province_code_ktc.zip_code; 
