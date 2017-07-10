@@ -1,0 +1,5 @@
+SELECT *,
+1 AS NFlag,
+iif((YEAR(OpenDate)=Left(Month,4) AND MONTH(OpenDate)=VAL(Right(Month,2))),1,0) AS OpenFlag
+FROM quni_DataAllTeam_step_1
+WHERE Sourc_Code <> 'AXA';
