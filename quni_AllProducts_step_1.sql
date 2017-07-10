@@ -1,4 +1,77 @@
 SELECT 
+MIS_CC_OS_Data_2016.SM, 
+MIS_CC_OS_Data_2016.SM_NAME, 
+MIS_CC_OS_Data_2016.M, 
+MIS_CC_OS_Data_2016.M_NAME, 
+MIS_CC_OS_Data_2016.AMSup, 
+MIS_CC_OS_Data_2016.[AMSup NAME], 
+MIS_CC_OS_Data_2016.TL_Code, 
+MIS_CC_OS_Data_2016.Agent_Code, 
+MIS_CC_OS_Data_2016.Application_ID,
+MIS_CC_OS_Data_2016.Result, 
+MIS_CC_OS_Data_2016.Result_Description, 
+MIS_CC_OS_Data_2016.Month, 
+MIS_CC_OS_Data_2016.Criteria_Code, 
+MIS_CC_OS_Data_2016.[New/Exist], 
+MIS_CC_OS_Data_2016.Branch_Code,
+MIS_CC_OS_Data_2016.Occupation_Code,
+MIS_CC_OS_Data_2016.ZipCode,
+MIS_CC_OS_Data_2016.Work_Place,
+MIS_CC_OS_Data_2016.Flag_Test,
+MIS_CC_OS_Data_2016.Doc_Waive,
+MIS_CC_OS_Data_2016.AGE,
+MIS_CC_OS_Data_2016.Source_Code,
+MIS_CC_OS_Data_2016.Income_Range,
+'CC' AS Product,
+IIf([Result] In ('A','R','D','C'),1,0) AS Finalized, 
+IIf([Result] In ('A','R','D'),1,0) AS FinalizedNetCancel, 
+IIf([Result]='A',1,0) AS Appr, 
+IIf(([Result]='A' And LEFT([New/Exist],1)='N'),1,0) AS ApprNew, 
+IIf(([Result]='A' And LEFT([New/Exist],1)='N'),[Approve_Amount],0) AS Credit_Limit, 
+'' AS FDD,
+IIf(([Result]='A' And LEFT([New/Exist],1)='N' And [No_Transaction_Date]<=60),1,0) AS Quality60
+FROM MIS_CC_OS_Data_2016;
+ 
+UNION ALL 
+
+
+SELECT 
+MIS_RL_OS_Data_60_2016.SM, 
+MIS_RL_OS_Data_60_2016.SM_NAME, 
+MIS_RL_OS_Data_60_2016.M, 
+MIS_RL_OS_Data_60_2016.M_NAME, 
+MIS_RL_OS_Data_60_2016.AMSup, 
+MIS_RL_OS_Data_60_2016.[AMSup NAME], 
+MIS_RL_OS_Data_60_2016.TL_Code, 
+MIS_RL_OS_Data_60_2016.Agent_Code, 
+MIS_RL_OS_Data_60_2016.Application_ID, 
+MIS_RL_OS_Data_60_2016.Result, 
+MIS_RL_OS_Data_60_2016.Result_Description, 
+MIS_RL_OS_Data_60_2016.Month, 
+MIS_RL_OS_Data_60_2016.Criteria_Code,
+'' AS [New/Exist],
+MIS_RL_OS_Data_60_2016.Branch_Code,
+MIS_RL_OS_Data_60_2016.Occupation_Code,
+MIS_RL_OS_Data_60_2016.ZipCode,
+MIS_RL_OS_Data_60_2016.Work_Place,
+MIS_RL_OS_Data_60_2016.Flag_Test,
+MIS_RL_OS_Data_60_2016.Doc_Waive,
+MIS_RL_OS_Data_60_2016.AGE,
+MIS_RL_OS_Data_60_2016.Source_Code,
+MIS_RL_OS_Data_60_2016.Income_Range,
+'RL' AS Product,
+IIf([Result] In ('A','R','D','C'),1,0) AS Finalized, 
+IIf([Result] In ('A','R','D'),1,0) AS FinalizedNetCancel, 
+IIf([Result]='A',1,0) AS Appr, 
+IIf([Result]='A' And [Criteria_Code]='0000',1,0) AS ApprNew, 
+IIf([Result]='A',[Approve_Amount],0) AS Credit_Limit,
+IIF([Result] = 'A', [Money_Transfer], 0) AS FDD, 
+IIf((([Result]='A' And [blk_Code]='VX' And [DAY_CLOSE]<=60) Or ([Result]='A' And [blk_Code]<>'VX' And [BALANCE]<=1 And [DAY_CLOSE]<=60)),1,0) AS Quality60
+FROM MIS_RL_OS_Data_60_2016;
+
+UNION ALL
+
+SELECT 
 MIS_CC_OS_Data_2017.SM, 
 MIS_CC_OS_Data_2017.SM_NAME, 
 MIS_CC_OS_Data_2017.M, 
@@ -32,7 +105,10 @@ IIf(([Result]='A' And LEFT([New/Exist],1)='N'),[Approve_Amount],0) AS Credit_Lim
 IIf(([Result]='A' And LEFT([New/Exist],1)='N' And [No_Transaction_Date]<=60),1,0) AS Quality60
 FROM MIS_CC_OS_Data_2017;
  
-UNION ALL SELECT 
+UNION ALL 
+
+
+SELECT 
 MIS_RL_OS_Data_60_2017.SM, 
 MIS_RL_OS_Data_60_2017.SM_NAME, 
 MIS_RL_OS_Data_60_2017.M, 
@@ -65,3 +141,4 @@ IIf([Result]='A',[Approve_Amount],0) AS Credit_Limit,
 IIF([Result] = 'A', [Money_Transfer], 0) AS FDD, 
 IIf((([Result]='A' And [blk_Code]='VX' And [DAY_CLOSE]<=60) Or ([Result]='A' And [blk_Code]<>'VX' And [BALANCE]<=1 And [DAY_CLOSE]<=60)),1,0) AS Quality60
 FROM MIS_RL_OS_Data_60_2017;
+
