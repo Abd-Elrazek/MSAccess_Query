@@ -1,4 +1,4 @@
-SELECT MIS_RL_OS_Data_60_2017.*,
+SELECT quni_RL_Portfolio.*,
 
 Switch(
 	[Source_Code] IN ('TSO','OSB','OSN','PXC','PXD','SRN','SRS','TCS','E2J'), 'Tele',
@@ -60,4 +60,4 @@ Switch(
 	[Channel_Sub] = 'Telesales', 'Telesales') AS TL_Type
 
 	
-FROM MIS_RL_OS_Data_60_2017;
+FROM quni_RL_Portfolio;
