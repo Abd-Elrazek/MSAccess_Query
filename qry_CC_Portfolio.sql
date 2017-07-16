@@ -1,4 +1,4 @@
-SELECT qry_CC_KPI_step_1.*, 
+SELECT qry_CC_Channel.*, 
 
 IIf([Result] In ('A','R','D','C'),1,0) AS Finalized, 
 IIf([Result] In ('A','R','D'),1,0) AS FinalizedNetCancel, 
@@ -46,9 +46,9 @@ Occupation_Code_Frontend.Desc,
 
 Province_Code_KTC.*
 
-FROM   (qry_cc_kpi_step_1 
+FROM   (qry_cc_Channel 
         LEFT JOIN occupation_code_frontend 
-               ON [qry_cc_kpi_step_1].occupation_code = 
+               ON [qry_cc_Channel].occupation_code = 
                   occupation_code_frontend.code) 
        LEFT JOIN province_code_ktc 
-              ON [qry_cc_kpi_step_1].zipcode = province_code_ktc.zip_code; 
+              ON [qry_cc_Channel].zipcode = province_code_ktc.zip_code; 
