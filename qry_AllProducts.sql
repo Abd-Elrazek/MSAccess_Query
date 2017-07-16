@@ -1,4 +1,4 @@
-SELECT quni_AllProducts_step_1.*, 
+SELECT quni_CC_RL_2016_2017_Performance.*, 
 
 Switch(
 	[Source_Code] IN ('TSO','OSB','OSN','PXC','PXD','SRN','SRS','TCS','E2J'), 'Tele',
@@ -18,4 +18,4 @@ Switch(
 	[Channel_Sub] = 'Direct' And Source_Code Like 'AXA','AXA',
 	[Channel_Sub] = 'OSS_Tele', 'OSS_Tele', 
 	[Channel_Sub] = 'Telesales', 'Telesales') AS TL_Type
-FROM quni_AllProducts_step_1;
+FROM quni_CC_RL_2016_2017_Performance;
