@@ -1,4 +1,4 @@
-SELECT quni_CC_Portfolio.*,
+SELECT quni_CC_2016_2017.*,
 
 Switch(
 	[Source_Code] IN ('TSO','OSB','OSN','PXC','PXD','SRN','SRS','TCS','E2J'), 'Tele',
