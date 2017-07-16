@@ -3,14 +3,14 @@ SELECT qry_CC_Channel.*,
        IIf([Result] IN ('A','R','D'),1,0) AS FinalizedNetCancel,
        IIf([Result]='A',1,0) AS Appr,
        IIf(([Result]='A'
-            AND LEFT([New/Exist],1)='N'),1,0) AS ApprNew,
+            AND Left([New/Exist],1)='N'),1,0) AS ApprNew,
        IIf(([Result]='A'
-            AND LEFT([New/Exist],1)='N'),[Approve_Amount],0) AS Credit_Limit_New,
+            AND Left([New/Exist],1)='N'),[Approve_Amount],0) AS Credit_Limit_New,
        IIf(([Result]='A'
-            AND LEFT([New/Exist],1)='N'
+            AND Left([New/Exist],1)='N'
             AND [Act_status]='Yes'),1,0) AS Activate,
        IIf(([Result]='A'
-            AND LEFT([New/Exist],1)='N'
+            AND Left([New/Exist],1)='N'
             AND [No_Transaction_Date]<=60),1,0) AS Active60,
        Switch((Credit_Limit_New>=20000
                AND Credit_Limit_New<=39999),'20k-39k',(Credit_Limit_New>=40000
@@ -20,17 +20,7 @@ SELECT qry_CC_Channel.*,
                                                                                                                                                                                AND Credit_Limit_New<=119999),'100k-119k',(Credit_Limit_New>=120000
                                                                                                                                                                                                                           AND Credit_Limit_New<=139999),'120k-139k',(Credit_Limit_New>=140000
                                                                                                                                                                                                                                                                      AND Credit_Limit_New<=159999),'140k-159k',(Credit_Limit_New>=160000),'>160k') AS Credit_Limit_New_Range,
-       IIf([TL_Code] IN
-             (SELECT DISTINCT [TL_Code]
-              FROM [Telesales Office]), 1, NULL) AS TS_Office,
-       Switch(Channel='OSS'
-              AND [TS_Office]=1,'OSS_Tele',Channel='OSS','Direct',Channel='Tele','Telesales') AS Channel_Sub,
-       Switch([Channel_Sub]='Direct'
-              AND TL_Code LIKE '4*','Indv_TL',[Channel_Sub]='Direct'
-              AND TL_Code LIKE '5*'
-              AND Source_Code LIKE 'OCS','New_Corp_TL',[Channel_Sub]='Direct'
-              AND TL_Code LIKE '5*','KeyAccount_TL',[Channel_Sub]='Direct'
-              AND Source_Code LIKE 'AXA','AXA',[Channel_Sub]='OSS_Tele','OSS_Tele',[Channel_Sub]='Telesales','Telesales') AS TL_Type,
+
        Switch((AGE>=10
                AND AGE<=19),'10-19',(AGE>=20
                                      AND AGE<=26),'20-26',(AGE>=27
@@ -59,8 +49,12 @@ SELECT qry_CC_Channel.*,
        IIf((Amway IS NOT NULL
             OR Insurance IS NOT NULL
             OR Occupation_Code='33'),1,0) AS ComEarner,
-       Occupation_Code_Frontend.Desc,
-       Province_Code_KTC.*
+       occupation_code_frontend.Desc,
+       province_code_ktc.Province,
+       province_code_ktc.Sub_Region,
+       province_code_ktc.Sub_Region2,
+       province_code_ktc.BKK_UPC,
+       province_code_ktc.strategic
 FROM (qry_CC_Channel
-      LEFT JOIN occupation_code_frontend ON [qry_CC_Channel].occupation_code=occupation_code_frontend.code)
-LEFT JOIN province_code_ktc ON [qry_CC_Channel].zipcode=province_code_ktc.zip_code;
+      LEFT JOIN occupation_code_frontend ON qry_CC_Channel.occupation_code = occupation_code_frontend.code)
+LEFT JOIN province_code_ktc ON qry_CC_Channel.zipcode = province_code_ktc.zip_code;
