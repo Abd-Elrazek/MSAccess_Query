@@ -40,12 +40,26 @@ SELECT qry_RL_Channel.*,
         (AGE<=26 AND Income_Range='30,000 up'),'FJ&Inc>=30k',
         (AGE<=26 AND Income_Range<>'30,000 up'),'First Jobber',
         (AGE>26 AND Income_Range='30,000 up'),'Inc>=30k',TRUE,'Mass') AS Cus_Segment, 
-    IIf(Work_Place LIKE '*แอมเวย์*' OR Work_Place LIKE '*amway*' OR Flag_Test LIKE '*amway*' OR Flag_Test LIKE '*แอมเวย์*',"Amway") AS Amway,
-    SWITCH((Work_Place LIKE '*เอไอเอ*' OR Work_Place LIKE '*AIA*' OR Work_Place LIKE '*เอ ไอ เอ*' OR Work_Place LIKE '*เอ.ไอ.เอ*'),'AIA',
-           (Work_Place LIKE '*แอกซ่า*' OR Work_Place LIKE '*AXA*' OR Work_Place LIKE '*แอ็กซ่า*'),'AXA',
-           (Work_Place LIKE '*ไทยประกัน*' AND Work_Place NOT LIKE '*ไทยสมุทร*'AND Work_Place NOT LIKE '*เมือง*'),'ThaiLife',
-           (Work_Place LIKE "*ประกัน*" AND Work_Place NOT LIKE "*สังคม*"),'OthIns') AS Insurance,
-   IIf((Amway IS NOT NULL OR Insurance IS NOT NUL OR Occupation_Code='33'),1) AS ComEarner, 
+    IIf(Work_Place LIKE '*แอมเวย์*' 
+        OR Work_Place LIKE '*amway*' 
+        OR Flag_Test LIKE '*amway*' 
+        OR Flag_Test LIKE '*แอมเวย์*',"Amway") AS Amway,
+    SWITCH(
+        (Work_Place LIKE '*เอไอเอ*' 
+         OR Work_Place LIKE '*AIA*' 
+         OR Work_Place LIKE '*เอ ไอ เอ*' 
+         OR Work_Place LIKE '*เอ.ไอ.เอ*'),'AIA',
+       (Work_Place LIKE '*แอกซ่า*' 
+        OR Work_Place LIKE '*AXA*' 
+        OR Work_Place LIKE '*แอ็กซ่า*'),'AXA',
+       (Work_Place LIKE '*ไทยประกัน*' 
+        AND Work_Place NOT LIKE '*ไทยสมุทร*'
+        AND Work_Place NOT LIKE '*เมือง*'),'ThaiLife',
+       (Work_Place LIKE "*ประกัน*" 
+        AND Work_Place NOT LIKE "*สังคม*"),'OthIns') AS Insurance,
+   IIf((Amway IS NOT NULL 
+        OR Insurance IS NOT NULL 
+        OR Occupation_Code='33'),1) AS ComEarner, 
    Occupation_Code_Frontend.Desc, 
    province_code_ktc.Province, 
    province_code_ktc.Sub_Region, 
