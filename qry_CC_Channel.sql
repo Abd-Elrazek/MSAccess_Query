@@ -1,5 +1,6 @@
 SELECT quni_CC_2016_2017.*,
-       Switch([Source_Code] IN ('TSO','OSB','OSN','PXC','PXD','SRN','SRS','TCS','E2J'), 'Tele', TRUE,'OSS') AS Channel,
+       Switch([Source_Code] IN ('OBB','OBS','OBU','OCB','OCS','OES','OGS','OSI','OSS','OSU','AXA'), 'OSS', 
+              TRUE,'Tele') AS Channel,
        Switch(Channel = 'Tele'
               AND Branch_Code IN ('REJ','SUP','CTC','MGP','PCC','CCP','000'), 'Offline_Tele', Channel = 'Tele', 'Online_Tele') AS Media_Type,
        Switch([Media_Type] = 'Online_Tele'
